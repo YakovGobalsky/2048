@@ -641,7 +641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c92a6e9a5e4451e43b45936c70b4e5ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameBoard: {fileID: 360797653}
+  game: {fileID: 360797654}
 --- !u!1 &319016029
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,8 +725,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 360797653}
-        m_TargetAssemblyTypeName: G2048.GameBoard, Assembly-CSharp
+      - m_Target: {fileID: 360797654}
+        m_TargetAssemblyTypeName: G2048.Game2048, Assembly-CSharp
         m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
@@ -784,7 +784,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 360797652}
-  - component: {fileID: 360797655}
   - component: {fileID: 360797654}
   - component: {fileID: 360797653}
   m_Layer: 5
@@ -835,7 +834,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 4
   height: 4
-  stepDelay: 0.1
   emptyTile: {fileID: 4615506317236210743, guid: 3a579e59fee50704c8b40e08f7d1d04d, type: 3}
   tilesSequence:
   - spawnProb: 9
@@ -867,35 +865,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 360797651}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: d0c2e2b38aade23429b442fec1dd5911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.82409513, b: 0.5235849, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.3
---- !u!222 &360797655
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 360797651}
-  m_CullTransparentMesh: 1
+  stepDelay: 0.1
 --- !u!1 &378887713
 GameObject:
   m_ObjectHideFlags: 0

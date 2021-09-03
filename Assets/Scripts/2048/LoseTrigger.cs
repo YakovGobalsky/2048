@@ -8,11 +8,11 @@ namespace G2048 {
 		[SerializeField] private GameObject loseOverlay;
 
 		private void OnEnable() {
-			GameBoard.onAllowedDirectionsChanged += OnAllowedDirectionsChanged;
+			Game2048.onAllowedDirectionsChanged += OnAllowedDirectionsChanged;
 		}
 
 		private void OnDisable() {
-			GameBoard.onAllowedDirectionsChanged -= OnAllowedDirectionsChanged;
+			Game2048.onAllowedDirectionsChanged -= OnAllowedDirectionsChanged;
 		}
 
 		private void OnAllowedDirectionsChanged(DirectionsSet directions) {
