@@ -7,6 +7,8 @@ namespace G2048 {
 		public int TileIndex { get; private set; }
 		public bool IsNew { get; private set; } = true;
 
+		public abstract int Scores {get; }
+
 		private Vector2 scaleMultiplier;
 
 		protected RectTransform rectTransform;

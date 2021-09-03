@@ -12,6 +12,21 @@ namespace G2048 {
 		private readonly DirectionsSet allowedDirections = new DirectionsSet();
 
 		public static event System.Action<DirectionsSet> onAllowedDirectionsChanged;
+		public static event System.Action onWinGame;
+		public static event System.Action<int> onScoresChanged;
+
+		private int _scores;
+		private int Scores {
+			get => _scores;
+			set {
+				_scores = value;
+				onScoresChanged?.Invoke(_scores);
+
+				if (GameSettings.highScore < _scores) {
+					GameSettings.highScore.Value = _scores;
+				}
+			}
+		}
 
 		private void Awake() {
 			board = GetComponent<GameBoard>();
@@ -25,6 +40,8 @@ namespace G2048 {
 		public void RestartGame() {
 			StopAllCoroutines();
 			isShiftAnimationWorking = false;
+
+			Scores = 0;
 
 			//? cast "new game" event?
 			board.ClearField();
@@ -73,6 +90,7 @@ namespace G2048 {
 			isShiftAnimationWorking = true;
 
 			var shiftVector = direction.ToVec2();
+			int maxIndex = 0;
 
 			bool wasMovement;
 			do {
@@ -84,9 +102,14 @@ namespace G2048 {
 						wasMovement = true;
 					} else if (board.CanCellsBeCombined(traveller, targetCell)) {
 						int index = board.GetTileIndex(traveller);
+
 						board.MoveAndDestroyTile(targetCell, traveller, stepDelay);
 						board.DestroyTile(traveller);
-						board.SpawnGameTile(index + 1, traveller);
+
+						var newTile = board.SpawnGameTile(index + 1, traveller);
+
+						Scores += newTile.Scores;
+						maxIndex = Mathf.Max(index, newTile.TileIndex);
 						wasMovement = true;
 					}
 				}
@@ -102,7 +125,11 @@ namespace G2048 {
 
 			CalculateAllowedDirections();
 
-			isShiftAnimationWorking = false;
+			if (maxIndex == board.MaxIndex) {
+				onWinGame?.Invoke();
+			} else {
+				isShiftAnimationWorking = false;
+			}
 		}
 
 	}

@@ -45,6 +45,7 @@ namespace G2048 {
 		}
 
 		public void SetAnimationScale(float scale) => animationScale = scale;
+		public int MaxIndex => tilesSequence.Length - 1;
 
 		public void ClearField() {
 			foreach (var cell in EachCell()) {

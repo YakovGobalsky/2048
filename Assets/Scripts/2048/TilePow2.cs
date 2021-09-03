@@ -6,8 +6,11 @@ namespace G2048 {
 	public class TilePow2: BaseTile {
 		[SerializeField] protected Text text;
 
+
 		private int num = 0;
 		private Animator animator;
+
+		public override int Scores => num;
 
 		protected override void Awake() {
 			base.Awake();
