@@ -15,6 +15,7 @@ namespace G2048 {
 
 		private void Awake() {
 			board = GetComponent<GameBoard>();
+			board.SetAnimationScale(1f / stepDelay);
 		}
 
 		private void Start() {
@@ -76,24 +77,21 @@ namespace G2048 {
 			bool wasMovement;
 			do {
 				wasMovement = false;
-				bool needDelay = false;
 				foreach (var traveller in board.EachCell(direction)) {
 					Vector2Int targetCell = traveller - shiftVector;
 					if (board.CanCellBeMoved(targetCell, shiftVector)) {
-						board.MoveTile(targetCell, shiftVector);
+						board.MoveTile(targetCell, shiftVector, stepDelay);
 						wasMovement = true;
-						needDelay = true;
 					} else if (board.CanCellsBeCombined(traveller, targetCell)) {
 						int index = board.GetTileIndex(traveller);
+						board.MoveAndDestroyTile(targetCell, traveller, stepDelay);
 						board.DestroyTile(traveller);
-						board.DestroyTile(targetCell); //2do: оставить движение для анимации?
 						board.SpawnGameTile(index + 1, traveller);
 						wasMovement = true;
-						//needDelay = true;
 					}
 				}
 
-				if (needDelay) {
+				if (wasMovement) {
 					yield return new WaitForSecondsRealtime(stepDelay);
 				}
 			} while (wasMovement);

@@ -19,13 +19,19 @@ namespace G2048 {
 		private BaseTile[,] gameField;
 
 		private float randomTileIndexSumProb;
+		private Vector2 cellScale;
+		private float animationScale = 1f;
 
 		private void Awake() {
-			gameField = new BaseTile[width, height];
+			cellScale = new Vector2(1f / width, 1f / height);
 
+			gameField = new BaseTile[width, height];
 			foreach (var cell in EachCell()) {
 				gameField[cell.x, cell.y] = null;
-				UpdateTilePos(GameObject.Instantiate(emptyTile, transform).transform as RectTransform, cell.x, cell.y); //2do: replace
+
+				var rctBGCell = GameObject.Instantiate(emptyTile, transform).transform as RectTransform;
+				rctBGCell.anchorMin = Vector2.Scale(cell, cellScale);
+				rctBGCell.anchorMax = Vector2.Scale(cell + Vector2Int.one, cellScale);
 			}
 
 			randomTileIndexSumProb = 0f;
@@ -35,6 +41,8 @@ namespace G2048 {
 				}
 			}
 		}
+
+		public void SetAnimationScale(float scale) => animationScale = scale;
 
 		public void ClearField() {
 			foreach (var cell in EachCell()) {
@@ -76,22 +84,11 @@ namespace G2048 {
 
 		public BaseTile SpawnGameTile(int index, Vector2Int pos) {
 			var tile = gameField[pos.x, pos.y] = GameObject.Instantiate(tilesSequence[index].tile, transform);
-			UpdateTilePos(tile, pos);
-			tile.InitTile(index);
+			tile.InitTile(index, pos, cellScale, animationScale);
 			return tile;
 		}
 
-		//2do: add move components to tiles after creation and control them
-		private void UpdateTilePos(BaseTile tile, in Vector2Int pos) => UpdateTilePos(tile.transform as RectTransform, pos.x, pos.y);
-		private void UpdateTilePos(RectTransform rectTransform, float x, float y) {
-			rectTransform.anchorMin = new Vector2((x + 0) / width, (y + 0) / height);
-			rectTransform.anchorMax = new Vector2((x + 1) / width, (y + 1) / height);
-		}
-
-		private bool IsCellFree(in Vector2Int pos) => gameField[pos.x, pos.y] == null;
-		private bool IsTileNew(in Vector2Int pos) => gameField[pos.x, pos.y]?.IsNew == true;
-
-		public int GetTileIndex(in Vector2Int pos) => gameField[pos.x, pos.y]?.Index ?? -1;
+		public int GetTileIndex(in Vector2Int pos) => GetTile(pos)?.TileIndex ?? -1;
 		public bool IsCellInsideField(in Vector2Int pos) => pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
 		public bool CanCellBeMoved(in Vector2Int pos, in Vector2Int dir) => !IsCellFree(pos) && IsCellFree(pos + dir);
 
@@ -123,21 +120,33 @@ namespace G2048 {
 
 		public void UnmarkNewTiles() {
 			foreach (var cell in EachCell()) {
-				gameField[cell.x, cell.y]?.UnmarkNewFlag();
+				GetTile(cell)?.UnmarkNewFlag();
 			}
 		}
 
 
-		public void MoveTile(Vector2Int pos, Vector2Int dir) {
-			gameField[pos.x + dir.x, pos.y + dir.y] = gameField[pos.x, pos.y];
-			gameField[pos.x, pos.y] = null;
-			UpdateTilePos(gameField[pos.x + dir.x, pos.y + dir.y], pos + dir);
+		public void MoveTile(Vector2Int pos, Vector2Int dir, float moveTime) {
+			GetTile(pos).MoveTo(pos + dir, moveTime);
+			SetTile(pos + dir, GetTile(pos));
+			ClearTile(pos);
 		}
 
 		public void DestroyTile(Vector2Int pos) {
-			Destroy(gameField[pos.x, pos.y].gameObject);
-			gameField[pos.x, pos.y] = null;
+			Destroy(GetTile(pos).gameObject);
+			ClearTile(pos);
 		}
+
+		public void MoveAndDestroyTile(Vector2Int pos, Vector2Int deathPlace, float moveTime) {
+			GetTile(pos).MoveToAndDestroy(deathPlace, moveTime);
+			ClearTile(pos);
+		}
+
+		private void SetTile(in Vector2Int pos, in BaseTile tile) => gameField[pos.x, pos.y] = tile;
+		private void ClearTile(in Vector2Int pos) => SetTile(pos, null);
+		private BaseTile GetTile(in Vector2Int pos) => gameField[pos.x, pos.y];
+
+		private bool IsCellFree(in Vector2Int pos) => GetTile(pos) == null;
+		private bool IsTileNew(in Vector2Int pos) => GetTile(pos)?.IsNew == true;
 
 	}
 }
