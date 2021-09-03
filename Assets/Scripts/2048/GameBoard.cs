@@ -31,12 +31,21 @@ namespace G2048 {
 
 		public static event System.Action<DirectionsSet> onAllowedDirectionsChanged;
 
+		private float randomTileIndexSumProb;
+
 		private void Awake() {
 			gameField = new BaseTile[width, height];
 
 			foreach (var cell in EachCell()) {
 				gameField[cell.x, cell.y] = null;
 				UpdateTilePos(GameObject.Instantiate(emptyTile, transform).transform as RectTransform, cell.x, cell.y); //2do: replace
+			}
+
+			randomTileIndexSumProb = 0f;
+			for (int a=0; a<tilesSequence.Length; a++) {
+				if (tilesSequence[a].spawnProb > 0) {
+					randomTileIndexSumProb += tilesSequence[a].spawnProb;
+				}
 			}
 		}
 
@@ -77,7 +86,19 @@ namespace G2048 {
 			if (emptyCells.Count == 0) {
 				//EndGameFail(); //this can't happen
 			} else {
+				float targetProb = Random.Range(0f, randomTileIndexSumProb);
 				int index = 0;
+				while (index < emptyCells.Count && (targetProb > tilesSequence[index].spawnProb)) {
+					if (tilesSequence[index].spawnProb > 0f) {
+						targetProb -= tilesSequence[index].spawnProb;
+					}
+					index++;
+				}
+
+				if (index == emptyCells.Count) {
+					index = 0; //cant happen
+				}
+
 				var pos = emptyCells[Random.Range(0, emptyCells.Count)];
 				SpawnGameTile(index, pos);
 			}
@@ -141,7 +162,6 @@ namespace G2048 {
 		public void ShiftBoard(Direction direction) {
 			if (!isShiftAnimationWorking) {
 				if (allowedDirections.Contains(direction)) {
-					Debug.Log($"Shift: {direction}");
 					StartCoroutine(ShiftBoardRoutine(direction));
 				}
 			}
