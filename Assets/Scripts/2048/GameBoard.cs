@@ -27,13 +27,15 @@ namespace G2048 {
 
 			gameField = new BaseTile[width, height];
 			foreach (var cell in EachCell()) {
-				gameField[cell.x, cell.y] = null;
+				ClearTile(cell);
 
+				//background cell
 				var rctBGCell = GameObject.Instantiate(emptyTile, transform).transform as RectTransform;
 				rctBGCell.anchorMin = Vector2.Scale(cell, cellScale);
 				rctBGCell.anchorMax = Vector2.Scale(cell + Vector2Int.one, cellScale);
 			}
 
+			//summ of all probabilities in tiles sequence
 			randomTileIndexSumProb = 0f;
 			for (int a=0; a<tilesSequence.Length; a++) {
 				if (tilesSequence[a].spawnProb > 0) {
@@ -47,9 +49,9 @@ namespace G2048 {
 		public void ClearField() {
 			foreach (var cell in EachCell()) {
 				if (!IsCellFree(cell)) {
-					Destroy(gameField[cell.x, cell.y].gameObject);
+					Destroy(GetTile(cell).gameObject);
 				}
-				gameField[cell.x, cell.y] = null;
+				ClearTile(cell);
 			}
 		}
 
@@ -83,7 +85,8 @@ namespace G2048 {
 		}
 
 		public BaseTile SpawnGameTile(int index, Vector2Int pos) {
-			var tile = gameField[pos.x, pos.y] = GameObject.Instantiate(tilesSequence[index].tile, transform);
+			var tile = GameObject.Instantiate(tilesSequence[index].tile, transform);
+			SetTile(pos, tile);
 			tile.InitTile(index, pos, cellScale, animationScale);
 			return tile;
 		}

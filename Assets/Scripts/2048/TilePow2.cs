@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace G2048 {
 	[RequireComponent(typeof(Animator))]
 	public class TilePow2: BaseTile {
-		[SerializeField] private Text text;
+		[SerializeField] protected Text text;
 
 		private int num = 0;
 		private Animator animator;
