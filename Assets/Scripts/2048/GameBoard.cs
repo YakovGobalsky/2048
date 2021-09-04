@@ -16,6 +16,8 @@ namespace G2048 {
 		[SerializeField] private GameObject emptyTile;
 		[SerializeField] private CellTile[] tilesSequence;
 
+		public int MaxIndex => tilesSequence.Length - 1;
+
 		private BaseTile[,] gameField;
 
 		private float randomTileIndexSumProb;
@@ -45,7 +47,6 @@ namespace G2048 {
 		}
 
 		public void SetAnimationScale(float scale) => animationScale = scale;
-		public int MaxIndex => tilesSequence.Length - 1;
 
 		public void ClearField() {
 			foreach (var cell in EachCell()) {
@@ -92,16 +93,6 @@ namespace G2048 {
 			return tile;
 		}
 
-		public int GetTileIndex(in Vector2Int pos) => GetTile(pos)?.TileIndex ?? -1;
-		public bool IsCellInsideField(in Vector2Int pos) => pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
-		public bool CanCellBeMoved(in Vector2Int pos, in Vector2Int dir) => !IsCellFree(pos) && IsCellFree(pos + dir);
-
-		public bool CanCellsBeCombined(in Vector2Int cell1, in Vector2Int cell2) {
-			return !IsCellFree(cell1) &&
-				GetTileIndex(cell1) == GetTileIndex(cell2) &&
-				!IsTileNew(cell1) && !IsTileNew(cell2);
-		}
-
 		public IEnumerable<Vector2Int> EachCell() {
 			for (var traveller = Vector2Int.zero; traveller.x < width; traveller.x++) {
 				for (traveller.y = 0; traveller.y < height; traveller.y++) {
@@ -110,13 +101,12 @@ namespace G2048 {
 			}
 		}
 
-		public IEnumerable<Vector2Int> EachCell(Direction direction) {
-			var offset = -direction.ToVec2();
+		public IEnumerable<Vector2Int> EachCellInDirection(Direction direction) {
 			var startPos = new Vector2Int(direction == Direction.DIR_RIGHT ? width - 1 : 0, direction == Direction.DIR_UP ? height - 1 : 0);
 			var step = new Vector2Int(direction == Direction.DIR_RIGHT ? -1 : +1, direction == Direction.DIR_UP ? -1 : +1);
 
-			for (var traveller = startPos; (traveller.x + offset.x) >= 0 && (traveller.x + offset.x) < width; traveller.x += step.x) {
-				for (traveller.y = startPos.y; (traveller.y + offset.y) >= 0 && (traveller.y + offset.y) < height; traveller.y += step.y) {
+			for (var traveller = startPos; traveller.x >= 0 && traveller.x < width; traveller.x += step.x) {
+				for (traveller.y = startPos.y; traveller.y >= 0 && traveller.y < height; traveller.y += step.y) {
 					yield return traveller;
 				}
 			}
@@ -145,12 +135,20 @@ namespace G2048 {
 			ClearTile(pos);
 		}
 
+		public bool IsCellInsideField(in Vector2Int pos) => pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
+		private bool IsCellFree(in Vector2Int pos) => GetTile(pos) == null;
+		public bool CanCellBeMoved(in Vector2Int pos, in Vector2Int dir) => !IsCellFree(pos) && IsCellFree(pos + dir);
+		public bool CanCellsBeCombined(in Vector2Int cell1, in Vector2Int cell2) {
+			return !IsCellFree(cell1) &&
+				GetTileIndex(cell1) == GetTileIndex(cell2) &&
+				!IsTileNew(cell1) && !IsTileNew(cell2);
+		}
+
+		private BaseTile GetTile(in Vector2Int pos) => gameField[pos.x, pos.y];
 		private void SetTile(in Vector2Int pos, in BaseTile tile) => gameField[pos.x, pos.y] = tile;
 		private void ClearTile(in Vector2Int pos) => SetTile(pos, null);
-		private BaseTile GetTile(in Vector2Int pos) => gameField[pos.x, pos.y];
-
-		private bool IsCellFree(in Vector2Int pos) => GetTile(pos) == null;
 		private bool IsTileNew(in Vector2Int pos) => GetTile(pos)?.IsNew == true;
+		public int GetTileIndex(in Vector2Int pos) => GetTile(pos)?.TileIndex ?? -1;
 
 	}
 }

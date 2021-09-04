@@ -22,11 +22,11 @@ namespace G2048 {
 		private Direction? inputDirection = null;
 
 		private void OnEnable() {
-			Game2048.onAllowedDirectionsChanged += OnAllowedDirectionsChanged;
+			game.onAllowedDirectionsChanged += OnAllowedDirectionsChanged;
 		}
 
 		private void OnDisable() {
-			Game2048.onAllowedDirectionsChanged -= OnAllowedDirectionsChanged;
+			game.onAllowedDirectionsChanged -= OnAllowedDirectionsChanged;
 		}
 
 		private void OnAllowedDirectionsChanged(DirectionsSet directions) {

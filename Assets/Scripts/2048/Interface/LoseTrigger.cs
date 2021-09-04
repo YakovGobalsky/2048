@@ -5,18 +5,21 @@ using UnityEngine.Events;
 
 namespace G2048 {
 	public class LoseTrigger: MonoBehaviour {
-		[SerializeField] private GameObject loseOverlay;
+		[SerializeField] private Game2048 game;
+		[SerializeField] private UnityEvent onLoseGame;
 
 		private void OnEnable() {
-			Game2048.onAllowedDirectionsChanged += OnAllowedDirectionsChanged;
+			game.onAllowedDirectionsChanged += OnAllowedDirectionsChanged;
 		}
 
 		private void OnDisable() {
-			Game2048.onAllowedDirectionsChanged -= OnAllowedDirectionsChanged;
+			game.onAllowedDirectionsChanged -= OnAllowedDirectionsChanged;
 		}
 
 		private void OnAllowedDirectionsChanged(DirectionsSet directions) {
-			loseOverlay.SetActive(directions.IsEmpty());
+			if (directions.IsEmpty()) {
+				onLoseGame?.Invoke();
+			}
 		}
 	}
 }

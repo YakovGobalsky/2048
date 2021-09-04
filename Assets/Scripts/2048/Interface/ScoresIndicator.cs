@@ -4,6 +4,7 @@ using UnityEngine.UI;
 namespace G2048 {
 	[RequireComponent(typeof(Text))]
 	public class ScoresIndicator: MonoBehaviour {
+		[SerializeField] private Game2048 game;
 		private Text text;
 
 		private void Awake() {
@@ -11,11 +12,11 @@ namespace G2048 {
 		}
 
 		private void OnEnable() {
-			Game2048.onScoresChanged += OnScoresChanged;
+			game.onScoresChanged += OnScoresChanged;
 		}
 
 		private void OnDisable() {
-			Game2048.onScoresChanged -= OnScoresChanged;
+			game.onScoresChanged -= OnScoresChanged;
 		}
 
 		private void OnScoresChanged(int scores) {
