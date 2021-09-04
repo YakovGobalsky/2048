@@ -729,7 +729,7 @@ GameObject:
   - component: {fileID: 284471116}
   - component: {fileID: 284471115}
   m_Layer: 5
-  m_Name: QuitGameProposal
+  m_Name: QuitGamePrompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
