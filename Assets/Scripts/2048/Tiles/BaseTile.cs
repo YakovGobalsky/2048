@@ -28,20 +28,18 @@ namespace G2048 {
 		public virtual void UnmarkNewFlag() => IsNew = false;
 
 		public virtual void MoveTo(Vector2Int targetPos, float moveTime) {
-			var targetAnchorMin = Vector2.Scale(targetPos, scaleMultiplier);
-			var targetAnchorMax = Vector2.Scale(targetPos + Vector2Int.one, scaleMultiplier);
 			StopAllCoroutines();
-			StartCoroutine(MoveAnchorsRoutine(targetAnchorMin, targetAnchorMax, moveTime));
+			StartCoroutine(MoveTileRoutine(targetPos, moveTime));
 		}
 
 		public virtual void MoveToAndDestroy(Vector2Int targetPos, float moveTime) {
-			var targetAnchorMin = Vector2.Scale(targetPos, scaleMultiplier);
-			var targetAnchorMax = Vector2.Scale(targetPos + Vector2Int.one, scaleMultiplier);
 			StopAllCoroutines();
-			StartCoroutine(MoveToAndDestroyRoutine(targetAnchorMin, targetAnchorMax, moveTime));
+			StartCoroutine(MoveToAndDestroyRoutine(targetPos, moveTime));
 		}
 
-		private IEnumerator MoveAnchorsRoutine(Vector2 targetAnchorMin, Vector2 targetAnchorMax, float moveTime) {
+		private IEnumerator MoveTileRoutine(Vector2 targetPos, float moveTime) {
+			var targetAnchorMin = Vector2.Scale(targetPos, scaleMultiplier);
+			var targetAnchorMax = Vector2.Scale(targetPos + Vector2Int.one, scaleMultiplier);
 			var sourceAnchorMin = rectTransform.anchorMin;
 			var sourceAnchorMax = rectTransform.anchorMax;
 			float t = 0f;
@@ -53,8 +51,8 @@ namespace G2048 {
 			} while (t <= 1f);
 		}
 
-		private IEnumerator MoveToAndDestroyRoutine(Vector2 targetAnchorMin, Vector2 targetAnchorMax, float moveTime) {
-			yield return StartCoroutine(MoveAnchorsRoutine(targetAnchorMin, targetAnchorMax, moveTime));
+		private IEnumerator MoveToAndDestroyRoutine(Vector2 targetPos, float moveTime) {
+			yield return StartCoroutine(MoveTileRoutine(targetPos, moveTime));
 			Destroy(gameObject);
 		}
 
