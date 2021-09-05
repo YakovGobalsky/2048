@@ -15,7 +15,7 @@ namespace G2048 {
 		}
 
 		private void OnDisable() {
-			GameSettings.highScore.onChanged += OnHighscoresChanged;
+			GameSettings.highScore.onChanged -= OnHighscoresChanged;
 		}
 
 		private void OnHighscoresChanged(int scores) {
